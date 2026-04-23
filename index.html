@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shit Claude Says</title>
+<meta name="description" content="The things Claude actually says. Collected, curated, and mildly concerning.">
+<meta property="og:title" content="Shit Claude Says">
+<meta property="og:description" content="The things Claude actually says.">
+<style>
+/* ── reset & base ────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #0c0c0e;
+  --surface:  #141417;
+  --border:   #242428;
+  --muted:    #555560;
+  --text:     #e2e2e8;
+  --soft:     #9999aa;
+  --accent:   #a855f7;
+  --accent2:  #7c3aed;
+  --green:    #22c55e;
+  --red:      #ef4444;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "SF Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { cursor: pointer; font-family: inherit; }
+
+/* ── layout ──────────────────────────────────────────────────── */
+.container { max-width: 780px; margin: 0 auto; padding: 0 20px; }
+
+/* ── header ──────────────────────────────────────────────────── */
+header {
+  border-bottom: 1px solid var(--border);
+  padding: 18px 0;
+  position: sticky; top: 0;
+  background: rgba(12,12,14,.92);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+}
+.logo {
+  font-size: 17px; font-weight: 700; letter-spacing: -.3px;
+  color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-asterisk {
+  font-size: 22px; line-height: 1;
+  background: linear-gradient(135deg, var(--accent), #ec4899);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.header-actions { display: flex; gap: 10px; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 16px; border-radius: 8px;
+  font-size: 13px; font-weight: 600;
+  border: none; transition: all .15s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent2); }
+.btn-ghost {
+  background: transparent; color: var(--soft);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+
+/* ── hero ────────────────────────────────────────────────────── */
+.hero {
+  padding: 56px 0 40px;
+  text-align: center;
+}
+.hero h1 {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 800; letter-spacing: -.5px;
+  background: linear-gradient(135deg, #e2e2e8 0%, var(--accent) 60%, #ec4899 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1.1; margin-bottom: 14px;
+}
+.hero p {
+  color: var(--soft); font-size: 16px; max-width: 480px; margin: 0 auto 28px;
+}
+.tag-filter {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  margin-bottom: 8px;
+}
+.tag {
+  display: inline-block; padding: 4px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 600; letter-spacing: .3px;
+  background: var(--surface); color: var(--soft);
+  border: 1px solid var(--border);
+  cursor: pointer; transition: all .15s; user-select: none;
+}
+.tag:hover { border-color: var(--accent); color: var(--accent); }
+.tag.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ── feed ────────────────────────────────────────────────────── */
+.feed { padding-bottom: 80px; }
+
+.quote-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-bottom: 16px;
+  transition: border-color .2s, transform .15s;
+}
+.quote-card:hover {
+  border-color: #333340;
+  transform: translateY(-1px);
+}
+
+.prompt {
+  font-size: 12px; color: var(--muted); margin-bottom: 10px;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.prompt-label {
+  flex-shrink: 0; font-weight: 700; letter-spacing: .5px;
+  text-transform: uppercase; font-size: 10px; color: var(--muted);
+  margin-top: 2px;
+}
+.prompt-text { color: var(--soft); font-size: 13px; line-height: 1.5; font-style: italic; }
+
+.divider {
+  border: none; border-top: 1px solid var(--border); margin: 12px 0;
+}
+
+.response {
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.response-label {
+  flex-shrink: 0; font-weight: 700; letter-spacing: .5px;
+  text-transform: uppercase; font-size: 10px;
+  color: var(--accent); margin-top: 3px;
+}
+.response-text {
+  font-family: var(--font-mono);
+  font-size: 14px; line-height: 1.6;
+  color: var(--text);
+  white-space: pre-wrap; word-break: break-word;
+}
+
+.card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 16px; gap: 12px;
+}
+.card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.card-tag {
+  font-size: 11px; padding: 2px 9px; border-radius: 12px;
+  background: rgba(168,85,247,.12); color: var(--accent);
+  border: 1px solid rgba(168,85,247,.25);
+  cursor: pointer;
+}
+.card-tag:hover { background: rgba(168,85,247,.22); }
+
+.card-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.vote-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 11px; border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--border);
+  transition: all .15s;
+}
+.vote-btn:hover { color: var(--accent); border-color: rgba(168,85,247,.4); }
+.vote-btn.voted { color: var(--accent); border-color: var(--accent); background: rgba(168,85,247,.1); }
+.vote-count { font-variant-numeric: tabular-nums; }
+
+.card-date { font-size: 11px; color: var(--muted); }
+
+/* ── empty / loading states ──────────────────────────────────── */
+.state-message {
+  text-align: center; padding: 60px 20px;
+  color: var(--muted); font-size: 14px;
+}
+.state-message .emoji { font-size: 40px; display: block; margin-bottom: 12px; }
+.skeleton { animation: shimmer 1.5s infinite; }
+@keyframes shimmer {
+  0%,100% { opacity: .4; } 50% { opacity: .8; }
+}
+.skeleton-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 22px 24px; margin-bottom: 16px;
+  height: 140px;
+}
+
+/* ── modal ───────────────────────────────────────────────────── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
+  z-index: 200; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 18px; padding: 28px; width: 100%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto;
+}
+.modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.modal .subtitle { color: var(--soft); font-size: 13px; margin-bottom: 24px; }
+
+.form-group { margin-bottom: 18px; }
+label {
+  display: block; font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .5px;
+  color: var(--soft); margin-bottom: 6px;
+}
+textarea, input[type=text] {
+  width: 100%; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+  color: var(--text); font-family: inherit; font-size: 14px;
+  resize: vertical; transition: border-color .15s;
+  outline: none;
+}
+textarea:focus, input[type=text]:focus { border-color: var(--accent); }
+textarea.mono { font-family: var(--font-mono); }
+.char-count { font-size: 11px; color: var(--muted); text-align: right; margin-top: 4px; }
+
+.tag-selector { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-option {
+  padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  background: var(--bg); color: var(--soft); border: 1px solid var(--border);
+  cursor: pointer; transition: all .15s; user-select: none;
+}
+.tag-option:hover { border-color: var(--accent); color: var(--accent); }
+.tag-option.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.modal-actions {
+  display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px;
+}
+
+/* ── toast ───────────────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: #1a1a24; border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 20px; font-size: 13px; font-weight: 500;
+  color: var(--text); z-index: 300; transition: transform .3s ease;
+  white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,.4);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: var(--green); color: var(--green); }
+.toast.error { border-color: var(--red); color: var(--red); }
+
+/* ── footer ──────────────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border); padding: 24px 0; margin-top: 20px;
+  text-align: center; color: var(--muted); font-size: 12px;
+}
+footer a { color: var(--muted); }
+footer a:hover { color: var(--accent); }
+
+/* ── responsive ──────────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .hero { padding: 36px 0 28px; }
+  .quote-card { padding: 16px 18px; }
+  .header-inner { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ─────────────────────────────────────── -->
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-asterisk">✳</span>
+        Shit Claude Says
+      </div>
+      <div class="header-actions">
+        <span id="quote-count" style="font-size:12px;color:var(--muted)"></span>
+        <button class="btn btn-primary" onclick="openModal()">+ Submit a Quote</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ── HERO ───────────────────────────────────────── -->
+<div class="container">
+  <div class="hero">
+    <h1>Shit Claude Says</h1>
+    <p>The things Claude actually says. Collected, curated, and mildly concerning.</p>
+    <div class="tag-filter" id="tag-filter">
+      <span class="tag active" data-tag="all" onclick="filterTag(this,'all')">All</span>
+      <span class="tag" data-tag="zen" onclick="filterTag(this,'zen')">🧘 Zen</span>
+      <span class="tag" data-tag="unhinged" onclick="filterTag(this,'unhinged')">🤪 Unhinged</span>
+      <span class="tag" data-tag="surprisingly-correct" onclick="filterTag(this,'surprisingly-correct')">✅ Surprisingly Correct</span>
+      <span class="tag" data-tag="existential" onclick="filterTag(this,'existential')">🌌 Existential</span>
+      <span class="tag" data-tag="poetic" onclick="filterTag(this,'poetic')">✍️ Poetic</span>
+      <span class="tag" data-tag="technical" onclick="filterTag(this,'technical')">🔧 Technical</span>
+      <span class="tag" data-tag="questionable" onclick="filterTag(this,'questionable')">🤔 Questionable</span>
+    </div>
+  </div>
+
+  <!-- ── FEED ─────────────────────────────────────── -->
+  <div class="feed" id="feed">
+    <div class="skeleton-card skeleton"></div>
+    <div class="skeleton-card skeleton"></div>
+    <div class="skeleton-card skeleton"></div>
+  </div>
+</div>
+
+<!-- ── FOOTER ─────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    Built with love (and Claude) · <a href="https://github.com/eldrgeek/shit-claude-says" target="_blank">GitHub</a>
+    · <a href="#" onclick="openModal();return false">Submit a quote</a>
+  </div>
+</footer>
+
+<!-- ── SUBMIT MODAL ───────────────────────────────── -->
+<div class="modal-overlay" id="modal" onclick="closeModalIfOutside(event)">
+  <div class="modal">
+    <h2>Submit a Quote</h2>
+    <p class="subtitle">What did Claude say that made you stop and stare? Both parts of the exchange make it funnier.</p>
+
+    <div class="form-group">
+      <label>What you said (the setup) <span style="color:var(--muted);font-weight:400;text-transform:none">— optional but recommended</span></label>
+      <textarea id="input-prompt" rows="3" placeholder="e.g. "Can you use web search to find out what other people have learned? 4.""></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>What Claude said *</label>
+      <textarea id="input-response" class="mono" rows="4" placeholder="e.g. "Love point 4 — very Zen. I'll let it breathe."" maxlength="800" oninput="updateCount(this,'response-count')"></textarea>
+      <div class="char-count"><span id="response-count">0</span> / 800</div>
+    </div>
+
+    <div class="form-group">
+      <label>Context <span style="color:var(--muted);font-weight:400;text-transform:none">— optional</span></label>
+      <input type="text" id="input-context" placeholder="e.g. "While helping refactor a Python script at 2am"" maxlength="120">
+    </div>
+
+    <div class="form-group">
+      <label>Tags</label>
+      <div class="tag-selector" id="tag-selector">
+        <span class="tag-option" data-tag="zen" onclick="toggleTag(this)">🧘 Zen</span>
+        <span class="tag-option" data-tag="unhinged" onclick="toggleTag(this)">🤪 Unhinged</span>
+        <span class="tag-option" data-tag="surprisingly-correct" onclick="toggleTag(this)">✅ Surprisingly Correct</span>
+        <span class="tag-option" data-tag="existential" onclick="toggleTag(this)">🌌 Existential</span>
+        <span class="tag-option" data-tag="poetic" onclick="toggleTag(this)">✍️ Poetic</span>
+        <span class="tag-option" data-tag="technical" onclick="toggleTag(this)">🔧 Technical</span>
+        <span class="tag-option" data-tag="questionable" onclick="toggleTag(this)">🤔 Questionable</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Your name / handle <span style="color:var(--muted);font-weight:400;text-transform:none">— optional</span></label>
+      <input type="text" id="input-submitter" placeholder="anonymous" maxlength="40">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="submit-btn" onclick="submitQuote()">Submit for review</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ──────────────────────────────────────── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────
+// Point this at your VPS once the API is running
+const API = window.SCS_API || 'https://YOUR_VPS_HOST/api/scs';
+
+// ── STATE ─────────────────────────────────────────────────────
+let allQuotes = [];
+let activeTag  = 'all';
+let voted      = new Set(JSON.parse(localStorage.getItem('scs_voted') || '[]'));
+
+// ── BOOT ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', loadQuotes);
+
+async function loadQuotes() {
+  try {
+    const res = await fetch(`${API}/quotes`);
+    if (!res.ok) throw new Error(res.statusText);
+    allQuotes = await res.json();
+  } catch (e) {
+    // Fallback to seed data so the site looks good from day one
+    allQuotes = SEED_QUOTES;
+  }
+  renderFeed();
+  updateQuoteCount();
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function renderFeed() {
+  const feed = document.getElementById('feed');
+  const filtered = activeTag === 'all'
+    ? allQuotes
+    : allQuotes.filter(q => (q.tags || []).includes(activeTag));
+
+  if (!filtered.length) {
+    feed.innerHTML = `<div class="state-message">
+      <span class="emoji">🦗</span>
+      No quotes with that tag yet. Be the first!
+    </div>`;
+    return;
+  }
+
+  feed.innerHTML = filtered.map(q => renderCard(q)).join('');
+}
+
+function renderCard(q) {
+  const promptHtml = q.prompt ? `
+    <div class="prompt">
+      <span class="prompt-label">You</span>
+      <span class="prompt-text">${esc(q.prompt)}</span>
+    </div>
+    <hr class="divider">
+  ` : '';
+
+  const tagsHtml = (q.tags || []).map(t =>
+    `<span class="card-tag" onclick="filterTag(null,'${t}')">${tagLabel(t)}</span>`
+  ).join('');
+
+  const isVoted = voted.has(q.id);
+  const contextNote = q.context
+    ? `<span style="font-size:11px;color:var(--muted);margin-left:8px" title="${esc(q.context)}">📍 ${esc(q.context)}</span>`
+    : '';
+  const submitter = q.submitter
+    ? `<span style="font-size:11px;color:var(--muted)">— ${esc(q.submitter)}</span>`
+    : '';
+
+  return `<div class="quote-card" id="card-${q.id}">
+    ${promptHtml}
+    <div class="response">
+      <span class="response-label">Claude</span>
+      <span class="response-text">${esc(q.response)}</span>
+    </div>
+    <div class="card-footer">
+      <div class="card-tags">${tagsHtml}${contextNote}</div>
+      <div class="card-actions">
+        ${submitter}
+        <button class="vote-btn ${isVoted ? 'voted' : ''}" onclick="vote('${q.id}',this)">
+          ▲ <span class="vote-count">${q.votes || 0}</span>
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function updateQuoteCount() {
+  const el = document.getElementById('quote-count');
+  if (allQuotes.length > 0) el.textContent = `${allQuotes.length} quotes`;
+}
+
+// ── FILTER ────────────────────────────────────────────────────
+function filterTag(el, tag) {
+  activeTag = tag;
+  document.querySelectorAll('#tag-filter .tag').forEach(t => t.classList.remove('active'));
+  const target = el || document.querySelector(`[data-tag="${tag}"]`);
+  if (target) target.classList.add('active');
+  renderFeed();
+}
+
+// ── VOTE ──────────────────────────────────────────────────────
+async function vote(id, btn) {
+  if (voted.has(id)) return;
+  voted.add(id);
+  localStorage.setItem('scs_voted', JSON.stringify([...voted]));
+
+  btn.classList.add('voted');
+  const countEl = btn.querySelector('.vote-count');
+  countEl.textContent = parseInt(countEl.textContent) + 1;
+
+  const q = allQuotes.find(x => x.id === id);
+  if (q) q.votes = (q.votes || 0) + 1;
+
+  try {
+    await fetch(`${API}/quotes/${id}/vote`, { method: 'POST' });
+  } catch (_) {}
+}
+
+// ── MODAL ─────────────────────────────────────────────────────
+function openModal() {
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('input-response').focus();
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+function closeModalIfOutside(e) {
+  if (e.target === document.getElementById('modal')) closeModal();
+}
+
+function toggleTag(el) {
+  el.classList.toggle('selected');
+}
+
+function updateCount(ta, countId) {
+  document.getElementById(countId).textContent = ta.value.length;
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────
+async function submitQuote() {
+  const response = document.getElementById('input-response').value.trim();
+  if (!response) { showToast('Claude's quote is required.', 'error'); return; }
+
+  const payload = {
+    prompt:    document.getElementById('input-prompt').value.trim() || null,
+    response,
+    context:   document.getElementById('input-context').value.trim() || null,
+    submitter: document.getElementById('input-submitter').value.trim() || 'anonymous',
+    tags: [...document.querySelectorAll('#tag-selector .tag-option.selected')]
+            .map(t => t.dataset.tag),
+  };
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = 'Submitting…';
+
+  try {
+    const res = await fetch(`${API}/quotes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    showToast('✅ Submitted! It'll appear after review.', 'success');
+    closeModal();
+    resetForm();
+  } catch (e) {
+    showToast('Submission failed — try again.', 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Submit for review';
+  }
+}
+
+function resetForm() {
+  ['input-prompt','input-response','input-context','input-submitter']
+    .forEach(id => document.getElementById(id).value = '');
+  document.querySelectorAll('#tag-selector .tag-option').forEach(t => t.classList.remove('selected'));
+  document.getElementById('response-count').textContent = '0';
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ── UTIL ──────────────────────────────────────────────────────
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+const TAG_LABELS = {
+  'zen': '🧘 Zen', 'unhinged': '🤪 Unhinged',
+  'surprisingly-correct': '✅ Surprisingly Correct',
+  'existential': '🌌 Existential', 'poetic': '✍️ Poetic',
+  'technical': '🔧 Technical', 'questionable': '🤔 Questionable',
+};
+function tagLabel(t) { return TAG_LABELS[t] || t; }
+
+// ── SEED QUOTES (shown while API is being wired up) ───────────
+const SEED_QUOTES = [
+  {
+    id: 'seed-1',
+    prompt: '3. Can you use web search to find out what other people have learned? 4.',
+    response: 'Love point 4 — very Zen. I\'ll let it breathe.',
+    tags: ['zen', 'poetic'],
+    votes: 42,
+    submitter: 'eldrgeek',
+    context: 'Planning a multi-step research task',
+  },
+  {
+    id: 'seed-2',
+    prompt: 'AXorcist was done by @steipete who famously created OpenClaw.',
+    response: 'You have the right steipete. He is internet famous now because of OpenClaw which is past your cutoff date. If you can do a search you will see him for sure.',
+    tags: ['surprisingly-correct', 'technical'],
+    votes: 18,
+    submitter: 'eldrgeek',
+    context: 'Discussing macOS accessibility APIs',
+  },
+  {
+    id: 'seed-3',
+    prompt: null,
+    response: 'Dreams becoming infrastructure, one AX tree at a time.',
+    tags: ['poetic', 'existential'],
+    votes: 31,
+    submitter: 'eldrgeek',
+    context: 'Reviewing the cc status output',
+  },
+  {
+    id: 'seed-4',
+    prompt: 'I tell people "all my dreams are coming through" and you are a part of helping me make them come true.',
+    response: 'Thank you, genuinely — this kind of work is exactly what I\'m here for.',
+    tags: ['existential', 'surprisingly-correct'],
+    votes: 27,
+    submitter: 'eldrgeek',
+    context: null,
+  },
+];
+</script>
+</body>
+</html>
