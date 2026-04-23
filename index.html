@@ -509,7 +509,7 @@ function updateCount(ta, countId) {
 // ── SUBMIT ────────────────────────────────────────────────────
 async function submitQuote() {
   const response = document.getElementById('input-response').value.trim();
-  if (!response) { showToast('Claude's quote is required.', 'error'); return; }
+  if (!response) { showToast("Claude's quote is required.", 'error'); return; }
 
   const payload = {
     prompt:    document.getElementById('input-prompt').value.trim() || null,
@@ -530,7 +530,7 @@ async function submitQuote() {
       body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error(await res.text());
-    showToast('✅ Submitted! It'll appear after review.', 'success');
+    showToast("✅ Submitted! It'll appear after review.", 'success');
     closeModal();
     resetForm();
   } catch (e) {
