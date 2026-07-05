@@ -1,0 +1,257 @@
+/*!
+ * soma-feedback.css — companion stylesheet for soma-feedback.js
+ * SOMA App Standard §8. Deliberately minimal + framework-free so it drops
+ * into any static site without a CSS pipeline. Bottom-LEFT placement —
+ * keeps clear of the bottom-right guide-widget / §7 tour-card convention.
+ *
+ * v2.1 (WQ-130): touch targets on submit/close controls bumped to the ~44px
+ * accessible minimum (were ~34-36px); added .soma-feedback-retry and the
+ * .soma-feedback-tab--result-* result-dot states — see soma-feedback.js
+ * header comment for the full list of v2.1 changes.
+ */
+
+.soma-feedback-root {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 9999;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.soma-feedback-tab {
+  position: relative;
+  background: #1f2430;
+  color: #f5f5f5;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 10px 16px;
+  min-height: 44px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.soma-feedback-tab:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+/* Result dot: last submit outcome, visible on the tab itself even after the
+   panel auto-closes or the user glanced away mid-request. Cleared the next
+   time the panel is opened (soma-feedback.js clearTabResult()). */
+.soma-feedback-tab--result-success::after,
+.soma-feedback-tab--result-error::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #1a1e27;
+}
+.soma-feedback-tab--result-success::after { background: #3fd67a; }
+.soma-feedback-tab--result-error::after { background: #ff8a8a; }
+
+.soma-feedback-panel {
+  position: absolute;
+  bottom: 52px;
+  left: 0;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  background: #1a1e27;
+  color: #f0f0f0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.soma-feedback-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.soma-feedback-heading strong {
+  font-size: 14px;
+}
+.soma-feedback-microcopy {
+  display: block;
+  font-size: 11px;
+  color: #a9adb8;
+  margin-bottom: 10px;
+}
+
+.soma-feedback-close {
+  background: none;
+  border: none;
+  color: #a9adb8;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  /* 44px min touch target without visually bloating the × glyph — padding
+     grows the hit area while the glyph itself stays small. Was 0 4px
+     (~22x18px), well under the accessible minimum. */
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  margin: -10px -8px -10px 0;
+}
+.soma-feedback-close:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+
+.soma-feedback-textarea,
+.soma-feedback-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #0f1219;
+  color: #f0f0f0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  margin-bottom: 8px;
+  font-family: inherit;
+}
+.soma-feedback-textarea:focus,
+.soma-feedback-input:focus {
+  outline: 2px solid #5b8cff;
+  outline-offset: 1px;
+}
+
+/* Honeypot: visually hidden but present in the tab/DOM order and NOT
+   display:none, so simplistic bots that only skip display:none fields
+   still fall for it. Off-screen + zero-size + unfocusable via tabindex. */
+.soma-feedback-hp {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  left: -9999px;
+}
+
+.soma-feedback-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.soma-feedback-submit,
+.soma-feedback-submit-build {
+  flex: 1;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-height: 44px;
+  box-sizing: border-box;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.soma-feedback-submit {
+  background: #2a2f3c;
+  color: #f0f0f0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.soma-feedback-submit:hover { background: #343a49; }
+
+.soma-feedback-submit-build {
+  position: relative;
+  overflow: hidden;
+  background: #5b8cff;
+  color: #0b0e14;
+}
+.soma-feedback-submit-build:hover { background: #7aa3ff; }
+
+.soma-feedback-submit:disabled,
+.soma-feedback-submit-build:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ── Unequivocal-intent guard states (SOMA-APP-STANDARD.md §8) ──────────── */
+
+/* Plain-click fallback: button flips to "Really build? Click again" for a
+   3s window. Distinct color so it reads as a different, temporary state,
+   not just a relabel. */
+.soma-feedback-submit-build--confirming {
+  background: #ffb454;
+  color: #201400;
+}
+.soma-feedback-submit-build--confirming:hover { background: #ffc274; }
+
+/* Momentary flash on an unequivocal action (modifier-click or completed
+   hold) — a distinct "pressed/armed" style, per spec, so there's visible
+   feedback the modifier/hold was recognized as unequivocal. */
+.soma-feedback-submit-build--armed {
+  background: #3fd67a;
+  color: #04220f;
+  transform: scale(0.97);
+}
+
+/* Touch press-and-hold: a visible fill sweeps left-to-right as the hold
+   progresses. The fill element's width is driven by JS (transition-duration
+   set to the hold duration, width flipped to 100% on touchstart). */
+.soma-feedback-submit-build-fill {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: rgba(255, 255, 255, 0.28);
+  transition: width 150ms linear;
+  pointer-events: none;
+  z-index: 0;
+}
+.soma-feedback-submit-build--holding {
+  background: #7aa3ff;
+}
+/* Keep the button's own text above the fill sweep. */
+.soma-feedback-submit-build {
+  isolation: isolate;
+}
+.soma-feedback-submit-build > * {
+  position: relative;
+  z-index: 1;
+}
+
+.soma-feedback-status {
+  margin-top: 8px;
+  font-size: 12px;
+  min-height: 14px;
+  color: #a9adb8;
+}
+.soma-feedback-status--success { color: #7be08a; }
+.soma-feedback-status--error { color: #ff8a8a; }
+
+/* Retry: shown only after a failed submit (soma-feedback.js), replaces the
+   passive "try again" text with an actual re-clickable action. */
+.soma-feedback-retry {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  min-height: 44px;
+  border: 1px solid rgba(255, 138, 138, 0.4);
+  border-radius: 8px;
+  background: rgba(255, 138, 138, 0.12);
+  color: #ff8a8a;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.soma-feedback-retry:hover { background: rgba(255, 138, 138, 0.2); }
+.soma-feedback-retry:disabled { opacity: 0.6; cursor: default; }
+
+@media (max-width: 420px) {
+  .soma-feedback-root { left: 8px; bottom: 8px; }
+  .soma-feedback-panel { width: calc(100vw - 24px); }
+}
