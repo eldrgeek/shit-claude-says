@@ -3,7 +3,7 @@
 # Usage: ./scs-moderator.sh
 # Set SCS_API and SCS_MOD_TOKEN env vars first
 
-SCS_API="${SCS_API:-https://vpsmikewolf.duckdns.org/api/scs}"
+SCS_API="${SCS_API:-https://vps.mike-wolf.com/api/scs}"
 MOD_TOKEN="${SCS_MOD_TOKEN:-change-me-in-production}"
 CC="/opt/homebrew/bin/python3 $HOME/Projects/mac-controller/cc.py"
 
@@ -18,7 +18,7 @@ while true; do
 import sys, json, subprocess, os
 
 quotes = json.load(sys.stdin)
-api = os.environ.get('SCS_API', 'https://vpsmikewolf.duckdns.org/api/scs')
+api = os.environ.get('SCS_API', 'https://vps.mike-wolf.com/api/scs')
 token = os.environ.get('SCS_MOD_TOKEN', 'change-me-in-production')
 cc = ['/opt/homebrew/bin/python3', os.path.expanduser('~/Projects/mac-controller/cc.py')]
 

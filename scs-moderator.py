@@ -5,7 +5,7 @@ Run via pm2: pm2 start scs-moderator.py --name scs-moderator --interpreter /opt/
 """
 import json, os, subprocess, time, urllib.request, urllib.error
 
-API       = os.environ.get('SCS_API',       'https://vpsmikewolf.duckdns.org/api/scs')
+API       = os.environ.get('SCS_API',       'https://vps.mike-wolf.com/api/scs')
 MOD_TOKEN = os.environ.get('SCS_MOD_TOKEN', 'cdecddce0fa7d016b9e778e101d600cf')
 CC        = ['/opt/homebrew/bin/python3', os.path.expanduser('~/Projects/mac-controller/cc.py')]
 POLL_SECS = 30

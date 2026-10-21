@@ -378,8 +378,10 @@ footer a:hover { color: var(--accent); }
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────
-// Point this at your VPS once the API is running
-const API = window.SCS_API || 'https://vpsmikewolf.duckdns.org/api/scs';
+// The quotes API (vps-api-server.js) runs on the VPS behind soma-main's /api/scs/.
+// Use the canonical hostname: on :443 the legacy duckdns name is answered by
+// PlayMaker's vhost, which has no /api/scs/ (that was the CORS error). (bead pm-09nn)
+const API = window.SCS_API || 'https://vps.mike-wolf.com/api/scs';
 
 // ── STATE ─────────────────────────────────────────────────────
 let allQuotes = [];
@@ -393,7 +395,9 @@ async function loadQuotes() {
   try {
     const res = await fetch(`${API}/quotes`);
     if (!res.ok) throw new Error(res.statusText);
-    allQuotes = await res.json();
+    const approved = await res.json();
+    const seen = new Set(approved.map(q => q.response));
+    allQuotes = [...approved, ...SEED_QUOTES.filter(q => !seen.has(q.response))];
   } catch (e) {
     // Fallback to seed data so the site looks good from day one
     allQuotes = SEED_QUOTES;
@@ -616,6 +620,6 @@ const SEED_QUOTES = [
   },
 ];
 </script>
-    <script src="/vendor/soma-feedback/soma-chip-loader.js" data-endpoint="https://vpsmikewolf.duckdns.org/feedback-svc/feedback" data-site="shit-claude-says" defer></script>
+    <script src="/vendor/soma-feedback/soma-chip-loader.js" data-endpoint="https://vps.mike-wolf.com/feedback-svc/feedback" data-site="shit-claude-says" defer></script>
 </body>
 </html>

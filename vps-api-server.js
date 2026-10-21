@@ -1,6 +1,7 @@
 /**
  * Shit Claude Says — VPS API Server
- * Deploy alongside your existing WebSocket/LiveKit server on vpsmikewolf.duckdns.org
+ * Runs on the VPS (vps.mike-wolf.com) as pm2 `scs-api`, from /opt/scs-api, behind the
+ * soma-main nginx location /api/scs/ (see nginx-snippet.conf).
  *
  * Usage:
  *   npm install express better-sqlite3 cors
@@ -18,6 +19,8 @@ const path       = require('path');
 const { execSync } = require('child_process');
 
 const PORT    = process.env.SCS_PORT || 4242;
+// Loopback only: nginx is the public door, and ufw opens no upstream ports.
+const HOST    = process.env.SCS_HOST || '127.0.0.1';
 const DB_PATH = process.env.SCS_DB   || path.join(__dirname, 'scs.db');
 // Shared secret with cc hud-ask moderation script
 const MOD_TOKEN = process.env.SCS_MOD_TOKEN || 'change-me-in-production';
@@ -135,4 +138,4 @@ function notifyModerator(id, response, prompt) {
 }
 
 // ── start ─────────────────────────────────────────────────────────────────────
-app.listen(PORT, () => console.log(`SCS API listening on :${PORT}`));
+app.listen(PORT, HOST, () => console.log(`SCS API listening on ${HOST}:${PORT}`));
